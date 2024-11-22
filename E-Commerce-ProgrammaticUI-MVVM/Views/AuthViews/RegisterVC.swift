@@ -49,7 +49,7 @@ extension RegisterVC: SetupProtocol {
         stackView.distribution = .fill
         
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: "bag2")
+        imageView.image = UIImage(named: "logo")
         
         usernameTextField.placeholder = "Username"
         usernameTextField.borderStyle = .roundedRect
@@ -86,7 +86,7 @@ extension RegisterVC: SetupProtocol {
         }
         
         imageView.snp.makeConstraints { make in
-            make.height.equalTo(200)
+            make.height.equalTo(190)
         }
         
         usernameTextField.snp.makeConstraints { make in

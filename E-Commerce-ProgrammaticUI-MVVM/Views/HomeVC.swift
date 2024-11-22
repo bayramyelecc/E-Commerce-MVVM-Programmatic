@@ -22,7 +22,7 @@ class HomeVC: UIViewController {
     private let topSellingCollectionView = TopSellingCollectionViewController()
     private let newInTitle = UILabel()
     private let newInCollectionView = NewInCollectionViewVC()
-    
+        
     
     var viewModel = MainViewModel()
     
@@ -68,9 +68,17 @@ extension HomeVC: SetupProtocol, CategoriesCollectionVCDelegate {
         stackView.addArrangedSubview(newInTitle)
         stackView.addArrangedSubview(newInCollectionView)
         
-        navigationItem.title = "Home"
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "cart"), style: .plain, target: self, action: #selector(cartButtonTapped))
         navigationController?.navigationBar.tintColor = .purple
+        
+        let titleLabel = UILabel()
+        titleLabel.text = "TRADE"
+        titleLabel.textColor = UIColor.systemPurple
+        titleLabel.font = .systemFont(ofSize: 18, weight: .black)
+        titleLabel.sizeToFit()
+        
+        navigationItem.titleView = titleLabel
+        
     }
     
     func drawUI() {

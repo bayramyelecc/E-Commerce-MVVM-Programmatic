@@ -55,7 +55,7 @@ extension LoginVC : SetupProtocol {
         stackView.distribution = .fill
         
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: "bag1")
+        imageView.image = UIImage(named: "logo")
         
         emailTextField.placeholder = "Email"
         emailTextField.borderStyle = .roundedRect
