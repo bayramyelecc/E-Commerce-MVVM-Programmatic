@@ -105,6 +105,12 @@ extension ProfileVC: SetupProtocol {
                 }
             }
             
+            if let  sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+                let loginVC = LoginVC()
+                let navController = UINavigationController(rootViewController: loginVC)
+                sceneDelegate.window?.rootViewController = navController
+                sceneDelegate.window?.makeKeyAndVisible()
+            }
         }))
         alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
         present(alert, animated: true)
