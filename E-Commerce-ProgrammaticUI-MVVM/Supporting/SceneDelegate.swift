@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -18,8 +19,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         self.window = UIWindow(windowScene: windowScene)
-        let vc = TabbarViewController()
-        self.window?.rootViewController = vc
+        
+        if Auth.auth().currentUser != nil {
+            let vc = TabbarViewController()
+            self.window?.rootViewController = vc
+        } else {
+            let vc = LoginVC()
+            let nav = UINavigationController(rootViewController: vc)
+            self.window?.rootViewController = nav
+        }
         window?.makeKeyAndVisible()
     }
 

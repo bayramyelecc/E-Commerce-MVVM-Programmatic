@@ -7,12 +7,16 @@
 
 import UIKit
 
-class BasketCollectionView: UIView {
+class BasketCollectionView: UICollectionView {
 
-    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    var viewModel = CartViewModel.shared
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    weak var basketDelegate: BasketCellDelegate?
+    
+     init() {
+         let layout = UICollectionViewFlowLayout()
+         layout.scrollDirection = .vertical
+         super.init(frame: .zero, collectionViewLayout: layout)
         setup()
     }
     
@@ -30,16 +34,11 @@ extension BasketCollectionView: SetupProtocol {
     }
     
     func configure() {
-        addSubview(collectionView)
-        collectionView.delegate = self
-        collectionView.dataSource = self
+        self.delegate = self
+        self.dataSource = self
         
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        collectionView.collectionViewLayout = layout
-        
-        collectionView.register(BasketCollectionViewCell.self, forCellWithReuseIdentifier: BasketCollectionViewCell.identifier)
-        collectionView.showsVerticalScrollIndicator = false
+        self.register(BasketCollectionViewCell.self, forCellWithReuseIdentifier: BasketCollectionViewCell.identifier)
+        self.showsVerticalScrollIndicator = false
     }
     
     func drawUI() {
@@ -47,32 +46,27 @@ extension BasketCollectionView: SetupProtocol {
     }
     
     func makeLayout() {
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        
     }
-    
     
 }
 
 extension BasketCollectionView : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        return viewModel.cartList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: BasketCollectionViewCell.identifier, for: indexPath) as! BasketCollectionViewCell
-        cell.backgroundColor = UIColor(hue: CGFloat(drand48()), saturation: 1, brightness: 1, alpha: 1)
+        cell.backgroundColor = .systemGray6
         cell.layer.cornerRadius = 20
+        cell.configure(with: viewModel.cartList[indexPath.row])
+        cell.delegate = basketDelegate
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: self.frame.width, height: 140)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("\(indexPath.row) tıklandı")
     }
     
 }

@@ -7,21 +7,21 @@
 
 import UIKit
 
-class FavoritesCollectionView: UIView {
-
-    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+class FavoritesCollectionView: UICollectionView {
     
-    var viewModel = MainViewModel()
+    var viewModel = FavoritesViewModel.shared
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init(){
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        super.init(frame: .zero, collectionViewLayout: layout)
         setup()
+        self.reloadData()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
 }
 
 extension FavoritesCollectionView: SetupProtocol {
@@ -33,16 +33,10 @@ extension FavoritesCollectionView: SetupProtocol {
     }
     
     func configure() {
-        addSubview(collectionView)
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        collectionView.collectionViewLayout = layout
-        
-        collectionView.register(FavoritesCollectionViewCell.self, forCellWithReuseIdentifier: FavoritesCollectionViewCell.identifier)
-        collectionView.showsVerticalScrollIndicator = false
+        self.register(FavoritesCollectionViewCell.self, forCellWithReuseIdentifier: FavoritesCollectionViewCell.identifier)
+        self.delegate = self
+        self.dataSource = self
+        self.contentInset = UIEdgeInsets(top: 15, left: 15, bottom: 15, right: 15)
     }
     
     func drawUI() {
@@ -50,33 +44,31 @@ extension FavoritesCollectionView: SetupProtocol {
     }
     
     func makeLayout() {
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        
     }
     
     
 }
 
-extension FavoritesCollectionView : UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension FavoritesCollectionView: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
+        let count = viewModel.favoritesList.count
+        print("Number of items in favorites: \(count)")
+        return count
     }
-    
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FavoritesCollectionViewCell.identifier, for: indexPath) as! FavoritesCollectionViewCell
+        print("Configuring cell for item at index: \(indexPath.row)")
+        let product = viewModel.favoritesList[indexPath.row]
+        cell.configure(with: product)
         cell.backgroundColor = .systemGray6
-        cell.layer.cornerRadius = 20
-        
+        cell.layer.cornerRadius = 10
         return cell
     }
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 170, height: 290)
+        let width = collectionView.frame.width / 2.3
+        return CGSize(width: width, height: 290)
     }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("\(indexPath.row) tıklandı")
-    }
-    
 }
+

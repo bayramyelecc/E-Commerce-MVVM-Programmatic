@@ -9,6 +9,8 @@ import Foundation
 
 class MainViewModel {
     
+    var onTopSellingListUpdated: (() -> Void)?
+    
     let categories: [Categories] = [
         Categories(name: "Hoodies", image: "hoodies"),
         Categories(name: "Shorts", image: "shorts"),
@@ -43,4 +45,9 @@ class MainViewModel {
         return products.filter { $0.category == category }
     }
     
+    var searchFilterItems : [Product] = []
+    
+    func filterProducts(name: String) {
+        searchFilterItems = products.filter { $0.name.contains(name) }
+    }
 }

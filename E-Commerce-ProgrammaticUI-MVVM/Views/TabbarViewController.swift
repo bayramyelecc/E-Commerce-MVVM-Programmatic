@@ -19,6 +19,9 @@ class TabbarViewController: UITabBarController {
         let homevc = HomeVC()
         let homenav = UINavigationController(rootViewController: homevc)
         
+        let searchVC = SearchTableView()
+        let searchNav = UINavigationController(rootViewController: searchVC)
+        
         let favoritesvc = FavoritesVC()
         let favnav = UINavigationController(rootViewController: favoritesvc)
         
@@ -26,10 +29,11 @@ class TabbarViewController: UITabBarController {
         let profnav = UINavigationController(rootViewController: profilevc)
         
         homevc.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 0)
+        searchVC.tabBarItem = UITabBarItem(title: "Search", image: UIImage(systemName: "magnifyingglass"), tag: 2)
         favoritesvc.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(systemName: "heart"), tag: 1)
         profilevc.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(systemName: "person"), tag: 3)
         
-        viewControllers = [homenav, favnav, profnav]
+        viewControllers = [homenav, searchNav, favnav, profnav]
     }
     
     private func tabbarDrawer(){

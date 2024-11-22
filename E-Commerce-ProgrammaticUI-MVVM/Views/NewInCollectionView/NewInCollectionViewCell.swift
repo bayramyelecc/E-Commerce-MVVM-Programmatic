@@ -7,10 +7,13 @@
 
 import UIKit
 import SnapKit
+import Lottie
 
 class NewInCollectionViewCell: UICollectionViewCell {
     
     static let identifier: String = "NewInCollectionViewCell"
+    
+    var animationView: LottieAnimationView!
     
     private let imageView = UIImageView()
     private let titleLabel = UILabel()
@@ -18,7 +21,11 @@ class NewInCollectionViewCell: UICollectionViewCell {
     private let favButton = UIButton()
     private let addToCartButton = UIButton()
     
+    var viewModel = FavoritesViewModel.shared
     private var isFav: Bool = false
+    var product: Product?
+    
+    var cartVM = CartViewModel.shared
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -69,21 +76,62 @@ class NewInCollectionViewCell: UICollectionViewCell {
             make.left.right.equalToSuperview().inset(10)
             make.bottom.equalToSuperview().inset(10)
         }
-        
+        addToCartButton.addTarget(self, action: #selector(addToCart), for: .touchUpInside)
     }
     
     func configure(with product: Product){
-        
+        self.product = product
         imageView.image = UIImage(named: product.image!)
         titleLabel.text = product.name
         priceLabel.text = "\(product.price) TL"
         
+        isFav = viewModel.favoritesList.contains(where: { $0.id == product.id })
+        if isFav {
+            favButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        } else {
+            favButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        }
+        
     }
     
     @objc private func favButtonTapped(){
-        
+        guard let currentProduct = product else {
+            print("product is nil")
+            return
+        }
         isFav.toggle()
         favButton.setImage(isFav ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart"), for: .normal)
+        
+        if isFav {
+            favButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+            viewModel.addToFavorites(currentProduct)
+        } else {
+            favButton.setImage(UIImage(systemName: "heart"), for: .normal)
+            viewModel.removeFromFavorites(currentProduct)
+        }
+        
+    }
+    
+    @objc func addToCart(){
+        guard let currentProduct = product else {
+            print("product is nil")
+            return
+        }
+        cartVM.addToCart(currentProduct)
+        showAddToCartAnimation()
+    }
+    
+    func showAddToCartAnimation() {
+        animationView = LottieAnimationView(name: "cart")
+        animationView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+        animationView.center = contentView.center
+        animationView.contentMode = .scaleAspectFit
+        contentView.addSubview(animationView)
+        animationView.play { [weak self] finished in
+            if finished {
+                self?.animationView.removeFromSuperview()
+            }
+        }
     }
     
 }

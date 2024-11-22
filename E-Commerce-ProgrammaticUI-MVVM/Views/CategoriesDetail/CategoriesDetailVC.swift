@@ -12,6 +12,8 @@ class CategoriesDetailVC: UIViewController {
     var selectedCategory: Categories?
     var viewModel = MainViewModel()
     
+    weak var basketDelegate: BasketCellDelegate?
+    
     private var filteredProducts: [Product] = []
     
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
@@ -19,6 +21,10 @@ class CategoriesDetailVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        collectionView.reloadData()
     }
 }
 
@@ -71,6 +77,7 @@ extension CategoriesDetailVC: UICollectionViewDelegate, UICollectionViewDataSour
         return cell
     }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 180, height: 290)
+        let width = collectionView.frame.width / 2.3
+        return CGSize(width: width, height: 290)
     }
 }

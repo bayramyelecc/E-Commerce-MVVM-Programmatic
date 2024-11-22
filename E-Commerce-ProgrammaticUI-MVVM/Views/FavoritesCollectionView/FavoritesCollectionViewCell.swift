@@ -6,10 +6,13 @@
 //
 
 import UIKit
+import Lottie
 
 class FavoritesCollectionViewCell: UICollectionViewCell {
     
     static let identifier: String = "FavoritesCollectionViewCell"
+    
+    var animationView: LottieAnimationView!
     
     private let imageView = UIImageView()
     private let titleLabel = UILabel()
@@ -17,10 +20,11 @@ class FavoritesCollectionViewCell: UICollectionViewCell {
     private let favButton = UIButton()
     private let addToCartButton = UIButton()
     
-    private var isFav: Bool = false
+    private var isFav: Bool = true
     
-    var viewModel =  MainViewModel()
+    var viewModel =  FavoritesViewModel.shared
     var product: Product?
+    var cartVM = CartViewModel.shared
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -29,6 +33,7 @@ class FavoritesCollectionViewCell: UICollectionViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+        
     }
     
     private func setupUI(){
@@ -71,15 +76,59 @@ class FavoritesCollectionViewCell: UICollectionViewCell {
             make.left.right.equalToSuperview().inset(10)
             make.bottom.equalToSuperview().inset(10)
         }
+        addToCartButton.addTarget(self, action: #selector(addToCart), for: .touchUpInside)
     }
+    
     func configure(with product: Product) {
+        self.product = product
         imageView.image = UIImage(named: product.image!)
         titleLabel.text = product.name
         priceLabel.text = "\(product.price) TL"
+        
+        isFav = viewModel.favoritesList.contains(where: { $0.id == product.id })
+        if isFav {
+            favButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        } else {
+            favButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        }
     }
     
-    @objc private func favButtonTapped(){
+    @objc private func favButtonTapped() {
+        guard let currentProduct = product else {
+            print("Product is nil")
+            return
+        }
         isFav.toggle()
-        favButton.setImage(isFav ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart"), for: .normal)
+        print("Favorite button tapped for: \(currentProduct.name)")
+        
+        if isFav {
+            favButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+        } else {
+            favButton.setImage(UIImage(systemName: "heart"), for: .normal)
+            viewModel.removeFromFavorites(currentProduct)
+        }
     }
+    
+    @objc func addToCart(){
+        guard let currentProduct = product else {
+            print("product is nil")
+            return
+        }
+        cartVM.addToCart(currentProduct)
+        showAddToCartAnimation()
+    }
+    
+    func showAddToCartAnimation() {
+        animationView = LottieAnimationView(name: "cart")
+        animationView.frame = CGRect(x: 0, y: 0, width: 100, height: 100)
+        animationView.center = contentView.center
+        animationView.contentMode = .scaleAspectFit
+        contentView.addSubview(animationView)
+        animationView.play { [weak self] finished in
+            if finished {
+                self?.animationView.removeFromSuperview()
+            }
+        }
+    }
+    
 }

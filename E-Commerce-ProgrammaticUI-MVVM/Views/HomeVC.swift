@@ -7,8 +7,11 @@
 
 import UIKit
 import SnapKit
+import Lottie
 
 class HomeVC: UIViewController {
+    
+    private var animationView: LottieAnimationView!
     
     private let scrollView = UIScrollView()
     private let stackView = UIStackView()
@@ -21,19 +24,31 @@ class HomeVC: UIViewController {
     private let newInCollectionView = NewInCollectionViewVC()
     
     
+    var viewModel = MainViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
         categoriesCollectionView.delegate = self
     }
+    
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.topSellingCollectionView.reloadData()
+    }
+    
 }
 
 extension HomeVC: SetupProtocol, CategoriesCollectionVCDelegate {
+    
     
     func setup() {
         configure()
         drawUI()
         makeLayout()
+        
     }
     
     func didSelectCategory(_ category: Categories) {
@@ -43,7 +58,6 @@ extension HomeVC: SetupProtocol, CategoriesCollectionVCDelegate {
     }
     
     func configure() {
-        view.addSubview(searchBar)
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
         stackView.addArrangedSubview(categoriesTitle)
@@ -67,16 +81,7 @@ extension HomeVC: SetupProtocol, CategoriesCollectionVCDelegate {
         scrollView.bouncesHorizontally = false
         scrollView.showsHorizontalScrollIndicator = false
         
-        searchBar.placeholder = "Search"
-        searchBar.textColor = .black
-        searchBar.font = .systemFont(ofSize: 15)
-        searchBar.layer.cornerRadius = 25
-        searchBar.clipsToBounds = true
-        searchBar.borderStyle = .none
-        searchBar.backgroundColor = .systemGray6
-        searchBar.leftView = UIImageView(image: UIImage(systemName: "magnifyingglass"))
-        searchBar.leftView?.tintColor = .black
-        searchBar.leftViewMode = .always
+        
         
         stackView.axis = .vertical
         stackView.spacing = 20
@@ -104,13 +109,9 @@ extension HomeVC: SetupProtocol, CategoriesCollectionVCDelegate {
     }
     
     func makeLayout() {
-        searchBar.snp.makeConstraints { make in
-            make.top.left.right.equalTo(view.safeAreaLayoutGuide).inset(20)
-            make.height.equalTo(40)
-        }
         
         scrollView.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom).offset(20)
+            make.top.equalTo(view.safeAreaLayoutGuide)
             make.left.right.bottom.equalToSuperview()
         }
         

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class ProfileVC: UIViewController {
     
@@ -25,13 +26,14 @@ extension ProfileVC: SetupProtocol {
         configure()
         drawUI()
         makeLayout()
+        displayUserName()
     }
     
     func configure() {
         view.addSubview(profileView)
         profileView.addSubview(nameLabel)
         profileView.addSubview(emailLabel)
-        profileView.addSubview(logoutButton) 
+        profileView.addSubview(logoutButton)
     }
     
     func drawUI() {
@@ -44,8 +46,7 @@ extension ProfileVC: SetupProtocol {
         profileView.backgroundColor = .systemGray5
         profileView.layer.cornerRadius = 20
         
-        nameLabel.text = "Bayram Yeleç"
-        emailLabel.text = "bayramyelec@gmail.com"
+        emailLabel.text = "\(Auth.auth().currentUser?.email ?? "")"
         nameLabel.textColor = .black
         emailLabel.textColor = .black
         nameLabel.font = .systemFont(ofSize: 20, weight: .black)
@@ -58,7 +59,7 @@ extension ProfileVC: SetupProtocol {
         logoutButton.backgroundColor = .systemPurple
         logoutButton.setTitle("Logout", for: .normal)
         logoutButton.layer.cornerRadius = 15
-        
+        logoutButton.addTarget(self, action: #selector(logoutButtonTapped), for: .touchUpInside)
     }
     
     func makeLayout() {
@@ -84,4 +85,41 @@ extension ProfileVC: SetupProtocol {
             make.height.equalTo(50)
         }
     }
+    
+    @objc func logoutButtonTapped(){
+        showAlert(title: "Sign Out", message: "Are you sure you want to sign out?")
+    }
+    
+    func showAlert(title: String, message: String){
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Sign Out", style: .default, handler: { _ in
+            FirebaseManager.shared.logoutUser { result in
+                switch result {
+                case .success(_):
+                    let vc = LoginVC()
+                    vc.modalTransitionStyle = .crossDissolve
+                    vc.modalPresentationStyle = .fullScreen
+                    self.present(vc, animated: true)
+                case .failure(let error):
+                    print(error)
+                }
+            }
+            
+        }))
+        alert.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
+        present(alert, animated: true)
+    }
+    
+    func displayUserName() {
+        FirebaseManager.shared.fetchUser { [weak self] username in
+            DispatchQueue.main.async {
+                if let username = username {
+                    self?.nameLabel.text = username
+                } else {
+                    self?.nameLabel.text = "Kullanıcı adı bulunamadı"
+                }
+            }
+        }
+    }
+    
 }

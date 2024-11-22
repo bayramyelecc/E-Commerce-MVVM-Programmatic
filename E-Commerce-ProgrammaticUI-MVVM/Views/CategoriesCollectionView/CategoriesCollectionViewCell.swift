@@ -16,6 +16,7 @@ class CategoriesCollectionViewCell: UICollectionViewCell {
     private let titleLabel = UILabel()
     private let backView = UIView()
     
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()

@@ -8,13 +8,13 @@
 import Foundation
 
 struct Product {
-    let id: String
-    let name: String
-    let price: Double
-    let category: String
-    let image: String?
-    let newTop: String?
-    var isFavorite: Bool = false
+  let id: String
+  let name: String
+  let price: Double
+  let category: String
+  let image: String?
+  let newTop: String
+  var isFavorite: Bool = false
 }
 
 

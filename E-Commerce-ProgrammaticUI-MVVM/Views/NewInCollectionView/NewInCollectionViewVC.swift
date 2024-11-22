@@ -7,15 +7,15 @@
 
 import UIKit
 
-class NewInCollectionViewVC: UIView {
-
-    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
+class NewInCollectionViewVC: UICollectionView {
+        
     var viewModel = MainViewModel()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setup()
+     init() {
+         let layout = UICollectionViewFlowLayout()
+         layout.scrollDirection = .horizontal
+         super.init(frame: .zero, collectionViewLayout: layout)
+         setup()
     }
     
     required init?(coder: NSCoder) {
@@ -29,31 +29,23 @@ extension NewInCollectionViewVC: SetupProtocol {
         configure()
         drawUI()
         makeLayout()
-        collectionView.reloadData()
     }
     
     func configure() {
-        addSubview(collectionView)
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.register(NewInCollectionViewCell.self, forCellWithReuseIdentifier: NewInCollectionViewCell.identifier)
+        self.delegate = self
+        self.dataSource = self
+        self.register(NewInCollectionViewCell.self, forCellWithReuseIdentifier: NewInCollectionViewCell.identifier)
         
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        collectionView.collectionViewLayout = layout
-        
-        collectionView.showsHorizontalScrollIndicator = false
-        collectionView.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        self.showsHorizontalScrollIndicator = false
+        self.contentInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
     
     func drawUI() {
-        collectionView.backgroundColor = .systemBackground
+        self.backgroundColor = .systemBackground
     }
     
     func makeLayout() {
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        
     }
 }
 

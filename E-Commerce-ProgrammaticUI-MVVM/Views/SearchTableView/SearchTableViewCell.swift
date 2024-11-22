@@ -1,36 +1,35 @@
 //
-//  TopSellingCollectionViewCell.swift
+//  SearchTableViewCell.swift
 //  E-Commerce-ProgrammaticUI-MVVM
 //
-//  Created by Bayram Yeleç on 18.11.2024.
+//  Created by Bayram Yeleç on 22.11.2024.
 //
 
 import UIKit
 import SnapKit
 import Lottie
 
+class SearchTableViewCell: UITableViewCell {
 
-class TopSellingCollectionViewCell: UICollectionViewCell {
+    static let identifier: String = "SearchTableViewCell"
     
-    static let identifier: String = "TopSellingCollectionViewCell"
+    var animationView : LottieAnimationView!
     
-    
-    var animationView: LottieAnimationView!
-        
-    var viewModel = FavoritesViewModel.shared
-    var cartVM = CartViewModel.shared
-    
-    private let imageView = UIImageView()
+    private var view = UIView()
+    private let customImageView = UIImageView()
     private let titleLabel = UILabel()
     private let priceLabel = UILabel()
     private let favButton = UIButton()
     private let addToCartButton = UIButton()
     
+    var viewModel = FavoritesViewModel.shared
     private var isFav: Bool = false
     var product: Product?
-        
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    
+    var cartVM = CartViewModel.shared
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
     
@@ -38,35 +37,43 @@ class TopSellingCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI() {
-        contentView.addSubview(imageView)
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(priceLabel)
-        contentView.addSubview(favButton)
-        contentView.addSubview(addToCartButton)
+    func setupUI(){
+        contentView.addSubview(view)
+        view.backgroundColor = .systemGray6
+        view.layer.cornerRadius = 10
+        view.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(10)
+        }
+        view.addSubview(customImageView)
+        view.addSubview(titleLabel)
+        view.addSubview(priceLabel)
+        view.addSubview(favButton)
+        view.addSubview(addToCartButton)
         
         favButton.setImage(UIImage(systemName: "heart"), for: .normal)
         favButton.tintColor = .purple
         favButton.snp.makeConstraints { make in
-            make.top.right.equalToSuperview().inset(10)
-            make.height.equalTo(30)
+            make.top.equalToSuperview().inset(10)
+            make.right.equalToSuperview().inset(10)
+            make.width.equalTo(30)
         }
         favButton.addTarget(self, action: #selector(favButtonTapped), for: .touchUpInside)
-        imageView.contentMode = .scaleAspectFit
-        imageView.snp.makeConstraints { make in
-            make.top.equalTo(favButton.snp.bottom)
-            make.left.right.equalToSuperview()
-            make.height.equalTo(150)
+        customImageView.contentMode = .scaleAspectFit
+        customImageView.snp.makeConstraints { make in
+            make.top.bottom.left.equalToSuperview().inset(10)
+            make.width.equalTo(150)
         }
         titleLabel.font = .systemFont(ofSize: 15, weight: .bold)
         titleLabel.textColor = .black
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(imageView.snp.bottom)
-            make.left.right.equalToSuperview().inset(10)
+            make.top.equalToSuperview().inset(20)
+            make.left.equalTo(customImageView.snp.right).offset(10)
+            make.right.equalTo(favButton.snp.left)
         }
         priceLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom)
-            make.left.right.equalToSuperview().inset(10)
+            make.top.equalTo(titleLabel.snp.bottom).offset(5)
+            make.left.equalTo(customImageView.snp.right).offset(10)
+            make.right.equalToSuperview()
         }
         addToCartButton.setTitle("Add to cart", for: .normal)
         addToCartButton.setTitleColor(.white, for: .normal)
@@ -74,16 +81,17 @@ class TopSellingCollectionViewCell: UICollectionViewCell {
         addToCartButton.backgroundColor = .systemPurple
         addToCartButton.layer.cornerRadius = 10
         addToCartButton.snp.makeConstraints { make in
-            make.top.equalTo(priceLabel.snp.bottom).offset(10)
-            make.left.right.equalToSuperview().inset(10)
+            make.top.equalTo(priceLabel.snp.bottom).offset(20)
+            make.left.equalTo(customImageView.snp.right)
+            make.right.equalToSuperview().inset(10)
             make.bottom.equalToSuperview().inset(10)
         }
         addToCartButton.addTarget(self, action: #selector(addToCart), for: .touchUpInside)
     }
     
-    func configure(with product: Product) {
+    func configure(with product: Product){
         self.product = product
-        imageView.image = UIImage(named: product.image!)
+        customImageView.image = UIImage(named: product.image!)
         titleLabel.text = product.name
         priceLabel.text = "\(product.price) TL"
         
@@ -93,16 +101,16 @@ class TopSellingCollectionViewCell: UICollectionViewCell {
         } else {
             favButton.setImage(UIImage(systemName: "heart"), for: .normal)
         }
-        
     }
     
-    @objc private func favButtonTapped() {
+    @objc private func favButtonTapped(){
         guard let currentProduct = product else {
-            print("Product is nil")
+            print("product is nil")
             return
         }
         isFav.toggle()
-        print("Favorite button tapped for: \(currentProduct.name)")
+        favButton.setImage(isFav ? UIImage(systemName: "heart.fill") : UIImage(systemName: "heart"), for: .normal)
+        
         if isFav {
             favButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
             viewModel.addToFavorites(currentProduct)
@@ -110,6 +118,7 @@ class TopSellingCollectionViewCell: UICollectionViewCell {
             favButton.setImage(UIImage(systemName: "heart"), for: .normal)
             viewModel.removeFromFavorites(currentProduct)
         }
+        
     }
     
     @objc func addToCart(){
@@ -133,5 +142,5 @@ class TopSellingCollectionViewCell: UICollectionViewCell {
             }
         }
     }
-
+    
 }
